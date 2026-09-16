@@ -21,6 +21,12 @@ SiteWatch scans a photo, finds every person in it, and checks whether each one i
 
 This is a deliberate, disclosed tradeoff: **there's no labeled PPE training dataset here, and no custom-trained classifier.** Detecting *people* reliably needs a real object detector (hence YOLOv8), but flagging *hard hats and vests* is done with color heuristics rather than a trained model — it's a fast, dependency-light proof of concept, not a production-grade learned PPE detector. A real deployment would fine-tune a detector on labeled PPE images (bounding boxes for helmets/vests specifically) to handle occlusion, unusual poses, and non-standard PPE colors far more robustly. The tradeoffs are visible in the demo: it does noticeably better on standing, front-facing people than on seated or turned-away ones.
 
+## Limitations & future improvements
+
+- **No safety glasses / eye protection detection.** Hard hats and hi-vis vests work well with color heuristics because they're large, solid-colored regions. Safety glasses are small, often clear or lightly tinted, and sit on a face full of confounding colors (skin, hair, shadows) — a color threshold would produce unreliable results rather than a useful signal. Adding this properly would need a trained object detector on labeled eyewear data, not a heuristic.
+- **Pose-sensitive.** The head/torso region split assumes a roughly upright, front-or-side-facing person. Seated, crouched, or heavily occluded people (see the seated worker in the demo, flagged incorrectly) throw off the region boundaries.
+- **Color-based, not shape-based.** Anything coincidentally matching hi-vis or hard-hat hues (e.g. a yellow jacket) can register as compliant even if it isn't actually PPE — a trained classifier would be far more robust here.
+
 ## Sample images
 
 The bundled sample photos in [samples/](samples/) are all U.S. federal government works and in the **public domain** — no licensing concerns, sourced via Wikimedia Commons:
